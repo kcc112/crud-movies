@@ -24,14 +24,20 @@ class MovieController @Inject()(
     }
   }
 
-  def findOne(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def findOneById(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val objectIdTryResult = BSONObjectID.parse(id)
 
     objectIdTryResult match {
-      case Success(objectId) => movieRepository.findOne(objectId).map {
+      case Success(objectId) => movieRepository.findOneById(objectId).map {
         movie => Ok(Json.toJson(movie))
       }
       case Failure(_) => Future.successful(BadRequest("Cannot parse the movie id"))
+    }
+  }
+
+  def findManyByTitle(title: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    movieRepository.findManyByTitle(title).map {
+      movies => Ok(Json.toJson(movies))
     }
   }
 
@@ -72,9 +78,9 @@ class MovieController @Inject()(
   }}
 
   def deleteAll(): Action[AnyContent] = Action.async { implicit request => {
-
     movieRepository.deleteAll().map {
       _ => NoContent
     }
   }}
+
 }
