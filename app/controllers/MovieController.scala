@@ -17,7 +17,7 @@ class MovieController @Inject()(
   val movieRepository: MovieRepository,
   val controllerComponents: ControllerComponents
 ) extends BaseController {
-  
+
   def findAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     movieRepository.findAll().map {
       movies => Ok(Json.toJson(movies))
@@ -26,7 +26,7 @@ class MovieController @Inject()(
 
   def findOne(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val objectIdTryResult = BSONObjectID.parse(id)
-    
+
     objectIdTryResult match {
       case Success(objectId) => movieRepository.findOne(objectId).map {
         movie => Ok(Json.toJson(movie))
@@ -48,7 +48,7 @@ class MovieController @Inject()(
   def update(id: String): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request => {
     request.body.validate[Movie].fold(
       _ => Future.successful(BadRequest("Cannot parse request body")),
-      movie =>{
+      movie => {
         val objectIdTryResult = BSONObjectID.parse(id)
         objectIdTryResult match {
           case Success(objectId) => movieRepository.update(objectId, movie).map {
@@ -68,6 +68,13 @@ class MovieController @Inject()(
         _ => NoContent
       }
       case Failure(_) => Future.successful(BadRequest("Cannot parse the movie id"))
+    }
+  }}
+
+  def deleteAll(): Action[AnyContent] = Action.async { implicit request => {
+
+    movieRepository.deleteAll().map {
+      _ => NoContent
     }
   }}
 }

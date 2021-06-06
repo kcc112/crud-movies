@@ -37,13 +37,13 @@ class MovieRepository @Inject()(
   def create(movie: Movie): Future[WriteResult] = {
     collection.flatMap(
       _.insert(ordered = false)
-      .one(movie.copy(_creationDate = Option(new DateTime()), _updateDate = Option(new DateTime()))))
+      .one(movie.copy(creationDate = Option(new DateTime()), updateDate = Option(new DateTime()))))
   }
 
   def update(id: BSONObjectID, movie: Movie): Future[WriteResult] = {
     collection.flatMap(
       _.update(ordered = false)
-      .one(BSONDocument("_id" -> id), movie.copy(_updateDate = Option(new DateTime())))
+      .one(BSONDocument("_id" -> id), movie.copy(updateDate = Option(new DateTime())))
     )
   }
 
@@ -51,6 +51,12 @@ class MovieRepository @Inject()(
     collection.flatMap(
       _.delete()
       .one(BSONDocument("_id" -> id), Option(1))
+    )
+  }
+
+  def deleteAll(): Future[WriteResult] = {
+    collection.flatMap(
+      _.delete().one(BSONDocument(), Option(1))
     )
   }
 }
