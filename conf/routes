@@ -1,8 +1,10 @@
 # Movies routing
 GET     /movies                     controllers.MovieController.findAll()
 GET     /movies/:id                 controllers.MovieController.findOneById(id: String)
-GET     /movies/search/:title       controllers.MovieController.findManyByTitle(title: String)
+GET     /movies/search/xd           controllers.MovieController.findManyByTitle(title: String, limit: Int ?= 100)
 POST    /movies                     controllers.MovieController.create()
 PUT     /movies/:id                 controllers.MovieController.update(id: String)
 DELETE  /movies/:id                 controllers.MovieController.delete(id: String)
 DELETE  /movies                     controllers.MovieController.deleteAll()
+
+

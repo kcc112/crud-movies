@@ -1,3 +1,5 @@
+package controllers
+
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
@@ -8,6 +10,8 @@ import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeHeaders
 import play.api.libs.json.JsValue
 import models.Movie
+import org.joda.time.DateTime
+import reactivemongo.bson.BSONObjectID
 
 class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
   var id = ""
@@ -24,11 +28,19 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
 
   "MovieController" should {
     "should create resource" in {
-      val response = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse("""{"title":"My favorite movie", "description":"My favorite movie description"}""")))).get
+      val response = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{
+          |"title":"favorite",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@",
+          |"countries":"@@@, @@@",
+          |"directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@",
+          |"cast":"@@@, @@@",
+          |"coverURL":"@@@"
+          |}""".stripMargin)))).get
 
       status(response) mustBe 201
-
-      contentAsString(response) must include ("My favorite movie")
     }
 
     "findAll be successful" in {

@@ -35,8 +35,8 @@ class MovieController @Inject()(
     }
   }
 
-  def findManyByTitle(title: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    movieRepository.findManyByTitle(title).map {
+  def findManyByTitle(title: String, limit: Int): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    movieRepository.findManyByTitle(title, limit).map {
       movies => Ok(Json.toJson(movies))
     }
   }
