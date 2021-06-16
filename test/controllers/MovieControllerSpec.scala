@@ -30,7 +30,7 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
     "should create resource" in {
       val response = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
         """{
-          |"title":"favorite",
+          |"title":"movie2",
           |"description":"My favorite movie description",
           |"genres":"@@@, @@@, @@@, @@@, @@@, @@@",
           |"countries":"@@@, @@@",
