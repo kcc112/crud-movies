@@ -1,15 +1,20 @@
 package repositories
 
 import models.Movie
+
+import java.text.Normalizer
 import javax.inject._
 import reactivemongo.api.bson.collection.BSONCollection
 import play.modules.reactivemongo.ReactiveMongoApi
+
 import scala.concurrent.{ExecutionContext, Future}
 import reactivemongo.api.{Cursor, ReadPreference}
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import org.joda.time.DateTime
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.bson.compat._
+
+import scala.collection.mutable.ArrayBuffer
 
 
 @Singleton
@@ -27,23 +32,50 @@ class MovieRepository @Inject()(
     )
   }
 
-  def findOne(id: BSONObjectID): Future[Option[Movie]] = {
+  def findOneById(id: BSONObjectID): Future[Option[Movie]] = {
     collection.flatMap(
       _.find(BSONDocument("_id" -> id), Option.empty[Movie])
-      .one[Movie]
+        .one[Movie]
     )
+  }
+  def findManyByTitle(titlee: String, limit: Int = 100): Future[Seq[Movie]] = {
+    var title = "Ala ma kota i kiciuś żółćąśćĄŻŚĆŁŃ"
+    var convertedTitle = Normalizer.normalize(title, Normalizer.Form.NFD).replaceAll("\\p{M}", "")
+
+    var keywords = convertedTitle.split(" ")
+    var searchPhrases = Seq[String]
+    var phrase = new String()
+    for (i <- 0 to (keywords.length -1)) {
+      phrase = new String(keywords(i) + " ")
+      searchPhrases += phrase
+      for (j <- i+1 to (keywords.length - 1)) {
+        //println(keywords(j))
+        phrase = phrase + " " + keywords(j)
+        searchPhrases += phrase
+      }
+    }
+    //sort by keyword length (most valuable results will be first found)
+    //search for results with them
+    //remove duplicates
+    //return
+    collection.flatMap(
+      _.find(BSONDocument(), Option.empty[Movie])
+        .cursor[Movie](ReadPreference.Primary)
+        .collect[Seq](limit, Cursor.FailOnError[Seq[Movie]]())
+    )
+
   }
 
   def create(movie: Movie): Future[WriteResult] = {
     collection.flatMap(
       _.insert(ordered = false)
-      .one(movie.copy(_creationDate = Option(new DateTime()), _updateDate = Option(new DateTime()))))
+      .one(movie.copy(creationDate = Option(new DateTime()), updateDate = Option(new DateTime()))))
   }
 
   def update(id: BSONObjectID, movie: Movie): Future[WriteResult] = {
     collection.flatMap(
       _.update(ordered = false)
-      .one(BSONDocument("_id" -> id), movie.copy(_updateDate = Option(new DateTime())))
+      .one(BSONDocument("_id" -> id), movie.copy(updateDate = Option(new DateTime())))
     )
   }
 
@@ -51,6 +83,12 @@ class MovieRepository @Inject()(
     collection.flatMap(
       _.delete()
       .one(BSONDocument("_id" -> id), Option(1))
+    )
+  }
+
+  def deleteAll(): Future[WriteResult] = {
+    collection.flatMap(
+      _.delete().one(BSONDocument(), Option(1))
     )
   }
 }
