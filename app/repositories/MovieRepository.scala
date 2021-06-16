@@ -40,59 +40,13 @@ class MovieRepository @Inject()(
     )
   }
 
-  def findManyByTitle(titlee: String, limit: Int = 100): Future[Seq[Movie]] = {
-    val title = "Ala ma kota i kiciuś żółćąśćłĄŻŚĆŁŃ"
-
-    val keywords = title.split(" ")
-
-    val searchPhrases = List[String]()
-
-    var phrase = new String()
-    for (i <- 0 to (keywords.length - 1)) {
-      phrase = new String(keywords(i) + " ")
-      searchPhrases :+ phrase
-      for (j <- i + 1 to (keywords.length - 1)) {
-        println(keywords(j))
-        phrase = phrase + " " + keywords(j)
-        searchPhrases :+ phrase
-      }
-    }
-    return null
-//
-    //    val tab = Future[BSONCollection]
-    //
-    //    searchPhrases.foreach(phrase => {
-    //      tab = collection.flatMap(
-    //        _.find(BSONDocument("title" -> phrase), Option.empty[Movie])
-    //          .cursor[Movie](ReadPreference.Primary)
-    //          .collect[Seq](limit, Cursor.FailOnError[Seq[Movie]]())
-    //      )
-    //      retrun tab
-    //    })
-    //
-    //
-    //
-    //
-    //    searchPhrases.foreach(phrase => {
-    //      tab :+ collection.flatMap(
-    //        _.find(BSONDocument("title" -> phrase), Option.empty[Movie])
-    //          .one[Movie]
-    //      )
-    //    })
-    //
-    //    return
-
-
-  //sort by keyword length (most valuable results will be first found)
-  //search for results with them
-  //remove duplicates
-  //return
-  //    collection.flatMap(
-  //      _.find(BSONDocument(), Option.empty[Movie])
-  //        .cursor[Movie](ReadPreference.Primary)
-  //        .collect[Seq](limit, Cursor.FailOnError[Seq[Movie]]())
-  //    )
-}
+  def findManyByTitle(title: String, limit: Int = 100): Future[Seq[Movie]] = {
+    collection.flatMap(
+      _.find(BSONDocument("title" -> BSONDocument("$in" -> List("movie", "movie2") ) ), Option.empty[Movie])
+        .cursor[Movie](ReadPreference.Primary)
+        .collect[Seq](limit, Cursor.FailOnError[Seq[Movie]]())
+    )
+  }
 
 
   def create(movie: Movie): Future[WriteResult] = {
