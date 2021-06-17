@@ -28,19 +28,67 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
 
   "MovieController" should {
     "should create resource" in {
-      val response = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
-        """{
-          |"title":"favorite",
+      val response0 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"best dog",
           |"description":"My favorite movie description",
-          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@",
-          |"countries":"@@@, @@@",
-          |"directors":"@@@, @@@, @@@, @@@",
-          |"screenwriters":"@@@, @@@, @@@",
-          |"cast":"@@@, @@@",
-          |"coverURL":"@@@"
-          |}""".stripMargin)))).get
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response1 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"best cat",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response2 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"my best dog",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response3 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"my best cat",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response4 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"best",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response5 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"my",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response6 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"dog and cat",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response7 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"cat",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response8 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"and",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
+      val response9 = route(app, FakeRequest(POST, "/movies", FakeHeaders(), AnyContentAsJson(Json.parse(
+        """{ "title":"dog",
+          |"description":"My favorite movie description",
+          |"genres":"@@@, @@@, @@@, @@@, @@@, @@@", "countries":"@@@, @@@", "directors":"@@@, @@@, @@@, @@@",
+          |"screenwriters":"@@@, @@@, @@@", "cast":"@@@, @@@", "coverURL":"@@@" }""".stripMargin)))).get
 
-      status(response) mustBe 201
+      status(response0) mustBe 201
+      status(response1) mustBe 201
+      status(response2) mustBe 201
+      status(response3) mustBe 201
+      status(response4) mustBe 201
+      status(response5) mustBe 201
+      status(response6) mustBe 201
+      status(response7) mustBe 201
+      status(response8) mustBe 201
+      status(response9) mustBe 201
     }
 
     "findAll be successful" in {
@@ -50,10 +98,16 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
       contentType(response) mustBe Some("application/json")
     }
 
-    "findOne receive 400" in {
+    "findOneById receive 400" in {
       val response = route(app, FakeRequest(GET, "/movies/1")).get
 
       status(response) mustBe 400
+    }
+
+    "findManyByTitle receive 400" in {
+      val response = route(app, FakeRequest(GET, "/movies/search/title?title=dog+and+cat&limit=1")).get
+
+      status(response) mustBe 200
     }
 
     "delete receive 400" in {
@@ -67,5 +121,6 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
 
       status(response) mustBe 404
     }
+
   }
 }
