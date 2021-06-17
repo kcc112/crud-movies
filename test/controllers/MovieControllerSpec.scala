@@ -105,7 +105,7 @@ class MovieControllerSpec extends PlaySpec with GuiceOneAppPerSuite  {
     }
 
     "findManyByTitle receive 400" in {
-      val response = route(app, FakeRequest(GET, "/movies/search/title?title=dog+and+cat&limit=1")).get
+      val response = route(app, FakeRequest(GET, "/movies/search/title?title=cat&limit=1")).get
 
       status(response) mustBe 200
     }

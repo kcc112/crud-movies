@@ -35,7 +35,7 @@ class MovieRepository @Inject()(
 
   def findOneById(id: BSONObjectID): Future[Option[Movie]] = {
     collection.flatMap(
-      _.find(BSONDocument("id" -> id), Option.empty[Movie])
+      _.find(BSONDocument("_id" -> id), Option.empty[Movie])
         .one[Movie]
     )
   }
@@ -60,7 +60,7 @@ class MovieRepository @Inject()(
         .cursor[Movie](ReadPreference.Primary)
         .collect[Seq](limit, Cursor.FailOnError[Seq[Movie]]())
     )
-}
+  }
 
 
   def create(movie: Movie): Future[WriteResult] = {
@@ -72,14 +72,14 @@ class MovieRepository @Inject()(
   def update(id: BSONObjectID, movie: Movie): Future[WriteResult] = {
     collection.flatMap(
       _.update(ordered = false)
-      .one(BSONDocument("id" -> id), movie.copy(updateDate = Option(new DateTime())))
+      .one(BSONDocument("_id" -> id), movie.copy(updateDate = Option(new DateTime())))
     )
   }
 
   def delete(id: BSONObjectID): Future[WriteResult] = {
     collection.flatMap(
       _.delete()
-      .one(BSONDocument("id" -> id), Option(1))
+      .one(BSONDocument("_id" -> id), Option(1))
     )
   }
 
